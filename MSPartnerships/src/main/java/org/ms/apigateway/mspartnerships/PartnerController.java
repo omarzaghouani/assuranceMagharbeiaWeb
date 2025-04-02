@@ -28,6 +28,11 @@ public class PartnerController {
         return ResponseEntity.ok(partnerService.getPartnerById(id));
     }
 
+    @PutMapping("/{id}")
+    public Partner updatePartner(@PathVariable Long id, @RequestBody Partner partner) {
+        return partnerService.updatePartner(id, partner);
+    }
+
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deletePartner(@PathVariable Long id) {
