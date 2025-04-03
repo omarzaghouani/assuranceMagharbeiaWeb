@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<body>
+<h1>Offre exclusive !</h1>
+<p id="offer-text">Chargement...</p>
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get('code');
+    document.getElementById("offer-text").innerHTML =
+        `Votre offre <strong>${code}</strong> : 15% de réduction !`;
+</script>
+</body>
+</html>

@@ -31,4 +31,28 @@ public class PackageService {
     public void deletePackage(int id) {
         packageRepository.deleteById(id);
     }
+
+    public Package updatePackage(int id, Package updatedPackage) {
+        return packageRepository.findById(id)
+                .map(existingPackage -> {
+                    // Update only non-null fields
+                    if (updatedPackage.getName() != null) {
+                        existingPackage.setName(updatedPackage.getName());
+                    }
+                    if (updatedPackage.getDescription() != null) {
+                        existingPackage.setDescription(updatedPackage.getDescription());
+                    }
+                    if (updatedPackage.getPrice() != null) {
+                        existingPackage.setPrice(updatedPackage.getPrice());
+                    }
+                    if (updatedPackage.getInsuranceType() != null) {
+                        existingPackage.setInsuranceType(updatedPackage.getInsuranceType());
+                    }
+                    if (updatedPackage.getDuration() != 0) {
+                        existingPackage.setDuration(updatedPackage.getDuration());
+                    }
+                    return packageRepository.save(existingPackage);
+                })
+                .orElseThrow(() -> new RuntimeException("Package not found with id: " + id));
+    }
 }

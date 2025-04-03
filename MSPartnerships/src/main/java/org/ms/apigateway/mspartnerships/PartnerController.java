@@ -4,8 +4,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/partners")
@@ -37,5 +43,116 @@ public class PartnerController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deletePartner(@PathVariable Long id) {
         partnerService.deletePartner(id);
+    }
+
+    //Advanced Functionality
+
+    @GetMapping("/badge")
+    public ResponseEntity<Map<String, Object>> generatePartnerBadge(
+            @RequestParam Long partnerId,
+            @RequestParam(defaultValue = "Exclusive partner offer") String offerDescription) {
+
+        try {
+            Partner partner = partnerService.getPartnerById(partnerId);
+
+            String badgeCode = generateBadgeCode(partner);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("partnerId", partner.getId());
+            response.put("name", partner.getName());
+            response.put("type", partner.getType() != null ? partner.getType() : "GENERAL");
+            response.put("email", partner.getEmail());
+            response.put("phone", partner.getPhone());
+            response.put("badgeCode", badgeCode);
+            response.put("offer", offerDescription);
+            response.put("redeemUrl", buildRedeemUrl(badgeCode));
+            response.put("qrCodeUrl", buildQrCodeUrl(badgeCode));
+
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "Partner with ID " + partnerId + " not found"
+            );
+        }
+    }
+
+    @GetMapping(value = "/badge-qr", produces = "text/html")
+    public String generatePartnerBadgeQr(
+            @RequestParam Long partnerId,
+            @RequestParam(defaultValue = "Special partner offer") String offerDescription) {
+
+        try {
+            Partner partner = partnerService.getPartnerById(partnerId);
+            String badgeCode = generateBadgeCode(partner);
+            String qrCodeUrl = buildQrCodeUrl(badgeCode);
+
+            return String.format("""
+                <!DOCTYPE html>
+                <html lang="en">
+                <head>
+                    <meta charset="UTF-8">
+                    <title>%s Partner Badge</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+                        h1 { color: #2c3e50; }
+                        .badge-container { 
+                            background: #f8f9fa; 
+                            border-radius: 10px; 
+                            padding: 20px; 
+                            display: inline-block;
+                            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="badge-container">
+                        <h1>%s</h1>
+                        <h3>%s Partner</h3>
+                        <img src="%s" alt="QR Code"/>
+                        <p><strong>Offer:</strong> %s</p>
+                        <p><strong>Code:</strong> %s</p>
+                    </div>
+                </body>
+                </html>
+                """,
+                    partner.getName(),
+                    partner.getName(),
+                    partner.getType() != null ? partner.getType() : "General",
+                    qrCodeUrl,
+                    offerDescription,
+                    badgeCode
+            );
+        } catch (RuntimeException e) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "Partner not found"
+            );
+        }
+    }
+
+    /* ========== HELPER METHODS ========== */
+
+    private String generateBadgeCode(Partner partner) {
+        String type = partner.getType() != null ?
+                partner.getType().toUpperCase() :
+                "GEN";
+        return "%s_%d_%d"
+                .formatted(
+                        type,
+                        partner.getId(),
+                        LocalDate.now().getYear()
+                );
+    }
+
+    private String buildRedeemUrl(String badgeCode) {
+        return "http://your-gateway:8090/api/partners/redeem?code=" +
+                URLEncoder.encode(badgeCode, StandardCharsets.UTF_8);
+    }
+
+    private String buildQrCodeUrl(String badgeCode) {
+        return "https://api.qrserver.com/v1/create-qr-code/?" +
+                "size=200x200&data=" +
+                URLEncoder.encode(buildRedeemUrl(badgeCode), StandardCharsets.UTF_8);
     }
 }

@@ -35,4 +35,13 @@ public class PackageController {
     public void deletePackage(@PathVariable int id) {
         packageService.deletePackage(id);
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Package> updatePackage(
+            @PathVariable int id,
+            @RequestBody Package updatedPackage
+    ) {
+        Package result = packageService.updatePackage(id, updatedPackage);
+        return ResponseEntity.ok(result);
+    }
 }

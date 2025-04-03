@@ -10,6 +10,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional
 public class PartnerService {
+
     private final PartnerRepository partnerRepository;
 
     public Partner createPartner(Partner partner) {
@@ -23,6 +24,7 @@ public class PartnerService {
         return partnerRepository.findAll();
     }
 
+    // Fix 1: Proper method implementation (was incorrectly formatted)
     public Partner getPartnerById(Long id) {
         return partnerRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Partner not found"));
