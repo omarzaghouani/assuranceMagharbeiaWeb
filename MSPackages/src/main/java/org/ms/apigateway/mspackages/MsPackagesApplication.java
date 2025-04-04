@@ -27,9 +27,9 @@ public class MsPackagesApplication {
             packageRepository.deleteAll();
 
             // Save test packages
-            packageRepository.save(new Package("Basic Package", "Basic insurance coverage", 50.0, "Health", 5));
-            packageRepository.save(new Package("Premium Package", "Premium insurance coverage", 100.0, "Life", 12));
-            packageRepository.save(new Package("Family Package", "Family insurance plan", 150.0, "Family", 12));
+            packageRepository.save(new Package("Basic Package", "Basic insurance coverage", 50.0, "Health", 5,"test",1,10.00));
+            packageRepository.save(new Package("Premium Package", "Premium insurance coverage", 100.0, "Life", 12,"test",1,10.00));
+            packageRepository.save(new Package("Family Package", "Family insurance plan", 150.0, "Family", 12,"test",1,10.00));
 
             // Fetch and print all packages
             System.out.println("Initial packages saved:");

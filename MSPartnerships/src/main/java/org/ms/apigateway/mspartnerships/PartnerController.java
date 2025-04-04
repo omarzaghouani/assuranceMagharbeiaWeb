@@ -9,6 +9,8 @@ import org.springframework.web.server.ResponseStatusException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -131,8 +133,59 @@ public class PartnerController {
         }
     }
 
-    /* ========== HELPER METHODS ========== */
+    /* ========== NEW REDEEM ENDPOINT ========== */
+    @GetMapping("/redeem")
+    public ResponseEntity<String> redeemOffer(@RequestParam String code) {
+        try {
+            // Parse the badge code (format: TYPE_ID_YEAR)
+            String[] parts = code.split("_");
+            if (parts.length != 3) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid badge code format");
+            }
 
+            Long partnerId = Long.parseLong(parts[1]);
+            Partner partner = partnerService.getPartnerById(partnerId);
+
+            String redemptionHtml = """
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Offer Redeemed</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; text-align: center; padding: 40px; }
+                        .success { 
+                            background: #e8f5e9;
+                            border-radius: 10px;
+                            padding: 20px;
+                            max-width: 500px;
+                            margin: 0 auto;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="success">
+                        <h1>🎉 Offer Redeemed!</h1>
+                        <h2>%s</h2>
+                        <p>Code: <strong>%s</strong></p>
+                        <p>Redeemed on: %s</p>
+                    </div>
+                </body>
+                </html>
+                """.formatted(
+                    partner.getName(),
+                    code,
+                    LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+            );
+
+            return ResponseEntity.ok(redemptionHtml);
+        } catch (NumberFormatException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid partner ID in code");
+        } catch (RuntimeException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Partner not found");
+        }
+    }
+
+    /* ========== HELPER METHODS ========== */
     private String generateBadgeCode(Partner partner) {
         String type = partner.getType() != null ?
                 partner.getType().toUpperCase() :
@@ -146,7 +199,7 @@ public class PartnerController {
     }
 
     private String buildRedeemUrl(String badgeCode) {
-        return "http://your-gateway:8090/api/partners/redeem?code=" +
+        return "http://localhost:8090/api/partners/redeem?code=" +
                 URLEncoder.encode(badgeCode, StandardCharsets.UTF_8);
     }
 
