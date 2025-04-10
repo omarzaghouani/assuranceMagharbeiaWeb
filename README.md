@@ -1,4 +1,4 @@
-# 💼 Projet de Microservices - Contrat App Web Distribuée
+# 💼 Projet de Microservices - 
 
 Ce projet est une application web distribuée basée sur une architecture microservices. Il permet la gestion des contrats clients avec notification par email, filtrage par statut, et détection des contrats expirants.
 
