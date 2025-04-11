@@ -8,7 +8,7 @@ Ce projet est une application web distribuée basée sur une architecture micros
 Frontend (Angular)
        |
        ↓
-API Gateway (Spring Cloud Gateway) ←→ JWT Auth
+API Gateway (Spring Cloud Gateway) ←→ JWT Auth /Keycloak
        ↓
 Eureka Server (Service Discovery)
        ↓
