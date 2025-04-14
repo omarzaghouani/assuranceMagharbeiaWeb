@@ -1,76 +1,86 @@
 import { Component, OnInit } from '@angular/core';
-import { PartnerService } from '../partner/partner.service';
-import { Partner } from '../partner/partner.model';
-import { FormsModule } from '@angular/forms'; // Import FormsModule
-import { CommonModule } from '@angular/common'; // Import CommonModule for *ngFor
+import { PartnerService } from './partner.service';
+import { Partner } from './partner.model';
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-partner',
-  standalone: true, // Mark this component as standalone
+  standalone: true,
   templateUrl: './partner.component.html',
   styleUrls: ['./partner.component.css'],
-  imports: [FormsModule, CommonModule] // Include both FormsModule and CommonModule
+  imports: [FormsModule, CommonModule]
 })
 export class PartnerComponent implements OnInit {
-  partners: Partner[] = []; // Array to hold partner data
-  newPartner: Partner = { name: '', type: '', email: '', phone: '' }; // New partner object
-  selectedPartner: Partner | null = null; // Selected partner for editing
+  partners: Partner[] = [];
+  newPartner: Partner = { name: '', type: '', email: '', phone: '' };
+  selectedPartner: Partner | null = null;
+  showAddForm = false;
+  isProcessing = false;
+  errorMessage: string | null = null;
 
   constructor(private partnerService: PartnerService) {}
 
   ngOnInit(): void {
-    this.loadPartners(); // Load partners on component initialization
+    this.loadPartners();
   }
 
-  // Method to load all partners
   loadPartners(): void {
     this.partnerService.getAllPartners().subscribe({
       next: (data) => {
-        this.partners = data; // Populate the partners array
+        this.partners = data;
       },
-      error: (err) => console.error('Failed to load partners:', err)
+      error: (err) => {
+        this.errorMessage = err.message;
+      }
     });
   }
 
-  // Method to add a new partner
   addPartner(): void {
     this.partnerService.createPartner(this.newPartner).subscribe({
       next: () => {
-        this.loadPartners(); // Reload partners after adding
-        this.newPartner = { name: '', type: '', email: '', phone: '' }; // Reset new partner form
+        this.newPartner = { name: '', type: '', email: '', phone: '' };
+        this.showAddForm = false;
+        this.loadPartners();
       },
-      error: (err) => console.error('Failed to add partner:', err)
+      error: (err) => {
+        this.errorMessage = err.message;
+      }
     });
   }
 
-  // Method to edit an existing partner
   editPartner(partner: Partner): void {
-    this.selectedPartner = { ...partner }; // Clone the partner object for editing
+    this.selectedPartner = { ...partner };
   }
 
-  // Method to update a selected partner
   updatePartner(): void {
-    if (!this.selectedPartner) {
-      console.error('No partner selected to update');
-      return; // Exit if no partner is selected
-    }
+    if (!this.selectedPartner?.id) return;
 
-    this.partnerService.updatePartner(this.selectedPartner.id!, this.selectedPartner).subscribe({
+    this.partnerService.updatePartner(this.selectedPartner.id, this.selectedPartner).subscribe({
       next: () => {
-        this.loadPartners(); // Reload partners after updating
-        this.selectedPartner = null; // Reset selected partner after update
+        this.selectedPartner = null;
+        this.loadPartners();
       },
-      error: (err) => console.error('Failed to update partner:', err)
+      error: (err) => {
+        this.errorMessage = err.message;
+      }
     });
   }
 
-  // Method to delete a partner by ID
-  deletePartner(id: number): void {
-    this.partnerService.deletePartner(id).subscribe({
-      next: () => {
-        this.loadPartners(); // Reload partners after deletion
-      },
-      error: (err) => console.error('Failed to delete partner:', err)
-    });
+  confirmDelete(id: number): void {
+    if (confirm('Are you sure you want to delete this partner?')) {
+      this.partnerService.deletePartner(id).subscribe({
+        next: () => {
+          this.loadPartners();
+        },
+        error: (err) => {
+          this.errorMessage = err.message;
+        }
+      });
+    }
+  }
+
+  cancelEdit(): void {
+    this.selectedPartner = null;
   }
 }

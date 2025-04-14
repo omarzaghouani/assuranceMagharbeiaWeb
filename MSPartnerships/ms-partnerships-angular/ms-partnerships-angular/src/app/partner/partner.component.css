@@ -1,0 +1,182 @@
+/* Base Styles */
+.partner-management {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  
+  .title {
+    color: #2c3e50;
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  
+  /* Table Styles */
+  .table-container {
+    overflow-x: auto;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  }
+  
+  .partners-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .partners-table th {
+    background-color: #3498db;
+    color: white;
+    padding: 12px;
+    text-align: left;
+  }
+  
+  .partners-table td {
+    padding: 12px;
+    border-bottom: 1px solid #ecf0f1;
+  }
+  
+  .partners-table tr:nth-child(even) {
+    background-color: #f8f9fa;
+  }
+  
+  .partners-table tr:hover {
+    background-color: #e8f4fc;
+  }
+  
+  .partner-type {
+    background: #e8f4fc;
+    color: #2980b9;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.9em;
+  }
+  
+  /* Button Styles */
+  .actions {
+    display: flex;
+    gap: 8px;
+  }
+  
+  .btn-edit, .btn-delete {
+    border: none;
+    padding: 6px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  
+  .btn-edit {
+    background-color: #f39c12;
+    color: white;
+  }
+  
+  .btn-delete {
+    background-color: #e74c3c;
+    color: white;
+  }
+  
+  .btn-edit:hover {
+    background-color: #e67e22;
+  }
+  
+  .btn-delete:hover {
+    background-color: #c0392b;
+  }
+  
+  /* Form Styles */
+  .form-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
+  }
+  
+  .form-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  input {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+  }
+  
+  .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+  }
+  
+  .btn-primary {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .btn-primary:hover {
+    background-color: #2980b9;
+  }
+  
+  .btn-cancel {
+    background-color: #95a5a6;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .btn-cancel:hover {
+    background-color: #7f8c8d;
+  }
+  
+  /* FAB Button */
+  .fab-button {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background-color: #2ecc71;
+    color: white;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    transition: all 0.2s;
+  }
+  
+  .fab-button:hover {
+    background-color: #27ae60;
+    transform: scale(1.1);
+  }
+  
+  /* Modal Styles */
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  .modal-content {
+    width: 90%;
+    max-width: 500px;
+  }

@@ -4,18 +4,16 @@ import { FormsModule } from '@angular/forms'; // Import FormsModule
 import { HttpClientModule } from '@angular/common/http';
 import { AppComponent } from './app.component';
 import { PartnerComponent } from './partner/partner.component';
+import { RouterModule } from '@angular/router';
+import { routes } from './app.routes';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    PartnerComponent
-  ],
-  imports: [
-    BrowserModule,
-    FormsModule, // Add FormsModule here
-    HttpClientModule
-  ],
-  providers: [],
-  bootstrap: [AppComponent]
-})
+    imports: [
+      BrowserModule,
+      FormsModule,
+      HttpClientModule,
+      RouterModule.forRoot(routes) // Add this line if not standalone
+    ],
+  })
+  
 export class AppModule {}

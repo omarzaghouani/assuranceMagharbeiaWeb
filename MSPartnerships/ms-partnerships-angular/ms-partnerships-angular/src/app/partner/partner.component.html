@@ -1,38 +1,85 @@
-<div>
-    <h1>Manage Partners</h1>
+<div class="partner-management">
+    <h1 class="title">Partner Management</h1>
   
-    <!-- Partner List -->
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Type</th>
-          <th>Email</th>
-          <th>Phone</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let partner of partners">
-          <td>{{ partner.name }}</td>
-          <td>{{ partner.type }}</td>
-          <td>{{ partner.email }}</td>
-          <td>{{ partner.phone }}</td>
-          <td>
-            <button (click)="selectedPartner = partner">Edit</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <!-- Error Message -->
+    <div *ngIf="errorMessage" class="error-message">
+      {{ errorMessage }}
+    </div>
   
-    <!-- Edit Partner Form -->
-    <form *ngIf="selectedPartner">
-        <input [(ngModel)]="selectedPartner.name" name="name" placeholder="Name" required />
-        <input [(ngModel)]="selectedPartner.type" name="type" placeholder="Type" />
-        <input [(ngModel)]="selectedPartner.email" name="email" placeholder="Email" required />
-        <input [(ngModel)]="selectedPartner.phone" name="phone" placeholder="Phone" />
-        <button type="submit">Update Partner</button>
+    <!-- Loading Indicator -->
+    <div *ngIf="isProcessing" class="loading-spinner">
+      <i class="fas fa-spinner fa-spin"></i> Processing...
+    </div>
+  
+    <!-- Floating Add Button -->
+    <button class="fab-button" (click)="showAddForm = !showAddForm">
+      <i class="fas fa-plus"></i>
+    </button>
+  
+    <!-- Add Partner Form -->
+    <form *ngIf="showAddForm" (ngSubmit)="addPartner()" class="form-card">
+      <h2>Add New Partner</h2>
+      <div class="form-group">
+        <input [(ngModel)]="newPartner.name" name="name" placeholder="Name" required>
+        <input [(ngModel)]="newPartner.type" name="type" placeholder="Type">
+      </div>
+      <div class="form-group">
+        <input [(ngModel)]="newPartner.email" name="email" placeholder="Email" required type="email">
+        <input [(ngModel)]="newPartner.phone" name="phone" placeholder="Phone" type="tel">
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn-primary" [disabled]="isProcessing">Save Partner</button>
+        <button type="button" class="btn-cancel" (click)="showAddForm = false">Cancel</button>
+      </div>
+    </form>
+  
+    <!-- Partners Table -->
+    <div class="table-container">
+      <table class="partners-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let partner of partners">
+            <td>{{ partner.name }}</td>
+            <td><span class="partner-type">{{ partner.type }}</span></td>
+            <td><a href="mailto:{{ partner.email }}">{{ partner.email }}</a></td>
+            <td><a href="tel:{{ partner.phone }}">{{ partner.phone }}</a></td>
+            <td class="actions">
+              <button (click)="editPartner(partner)" class="btn-edit">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button (click)="confirmDelete(partner.id!)" class="btn-delete">
+                <i class="fas fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  
+    <!-- Edit Partner Modal -->
+    <div *ngIf="selectedPartner" class="modal-overlay">
+      <form (ngSubmit)="updatePartner()" class="form-card modal-content">
+        <h2>Edit Partner</h2>
+        <div class="form-group">
+          <input [(ngModel)]="selectedPartner.name" name="name" placeholder="Name" required>
+          <input [(ngModel)]="selectedPartner.type" name="type" placeholder="Type">
+        </div>
+        <div class="form-group">
+          <input [(ngModel)]="selectedPartner.email" name="email" placeholder="Email" required type="email">
+          <input [(ngModel)]="selectedPartner.phone" name="phone" placeholder="Phone" type="tel">
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn-primary" [disabled]="isProcessing">Update</button>
+          <button type="button" class="btn-cancel" (click)="selectedPartner = null">Cancel</button>
+        </div>
       </form>
-      
+    </div>
   </div>
-  
