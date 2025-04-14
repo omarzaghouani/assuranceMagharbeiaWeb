@@ -1,12 +1,13 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { PartnerComponent } from "./partner/partner.component";
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  standalone: true, // Indicates this is a standalone component
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  styleUrls: ['./app.component.css'],
+  imports: [PartnerComponent]
 })
 export class AppComponent {
-  title = 'ms-partnerships-angular';
+  title = 'ng-front';
 }

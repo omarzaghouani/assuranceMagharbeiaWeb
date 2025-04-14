@@ -1,0 +1,38 @@
+<div>
+    <h1>Manage Partners</h1>
+  
+    <!-- Partner List -->
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Email</th>
+          <th>Phone</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let partner of partners">
+          <td>{{ partner.name }}</td>
+          <td>{{ partner.type }}</td>
+          <td>{{ partner.email }}</td>
+          <td>{{ partner.phone }}</td>
+          <td>
+            <button (click)="selectedPartner = partner">Edit</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  
+    <!-- Edit Partner Form -->
+    <form *ngIf="selectedPartner">
+        <input [(ngModel)]="selectedPartner.name" name="name" placeholder="Name" required />
+        <input [(ngModel)]="selectedPartner.type" name="type" placeholder="Type" />
+        <input [(ngModel)]="selectedPartner.email" name="email" placeholder="Email" required />
+        <input [(ngModel)]="selectedPartner.phone" name="phone" placeholder="Phone" />
+        <button type="submit">Update Partner</button>
+      </form>
+      
+  </div>
+  
