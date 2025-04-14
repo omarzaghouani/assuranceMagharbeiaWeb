@@ -1,0 +1,10 @@
+version: "3.8"
+
+services:
+  api-gateway:
+    image: omaar01/api-gateway:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8089:8080"
