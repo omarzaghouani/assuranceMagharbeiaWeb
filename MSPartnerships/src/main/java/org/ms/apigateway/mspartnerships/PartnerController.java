@@ -18,6 +18,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/partners")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:4200")
 public class PartnerController {
     private final PartnerService partnerService;
 
