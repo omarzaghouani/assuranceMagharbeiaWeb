@@ -1,0 +1,134 @@
+#version: "3.9"
+
+x-shared-volumes:
+  time-sync:
+    - /etc/localtime:/etc/localtime:ro
+    - /etc/timezone:/etc/timezone:ro
+
+services:
+  serviceregistry:  # Eureka Server
+    container_name: eureka
+    build: ./demoerikaserveur
+    hostname: serviceregistry
+    ports:
+      - "8761:8761"
+    image: naderbenmimoun/eureka
+    environment:
+      - eureka.client.serviceUrl.defaultZone=http://serviceregistry:8761/eureka/
+    restart: unless-stopped
+
+  db-mysql:
+    image: "mysql:5.6"
+    container_name: db-mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+    ports:
+      - "3307:3306"
+    restart: unless-stopped
+
+  refund-web-distibue:
+    container_name: refund-web-distibue
+    build: ./refund-web-distibue
+    ports:
+      - "8083:8083"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db-mysql:3306/RefundTest?createDatabaseIfNotExist=true&useSSL=false&max_allowed_packet=15728640
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://serviceregistry:8761/eureka/
+    image: naderbenmimoun/refund-web-distibue
+    restart: unless-stopped
+    depends_on:
+      - serviceregistry
+      - db-mysql
+
+  assurance-web-distibue:
+    container_name: assurance-web-distibue
+    build: ./assurance-web-distibue
+    ports:
+      - "8084:8084"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db-mysql:3306/RefundTest?createDatabaseIfNotExist=true&useSSL=false&max_allowed_packet=15728640
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://serviceregistry:8761/eureka/
+    image: naderbenmimoun/assurance-web-distibue
+    restart: unless-stopped
+    depends_on:
+      - serviceregistry
+      - db-mysql
+
+  api-gateway:
+    build: ./Apigatway4sae10
+    image: naderbenmimoun/apigateway
+    container_name: api-gateway
+    ports:
+      - "8093:8093"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://serviceregistry:8761/eureka/
+    depends_on:
+      - serviceregistry
+      - refund-web-distibue
+      - assurance-web-distibue
+    restart: unless-stopped
+
+  angular-frontend:
+    build: ./gateway-client
+    image: naderbenmimoun/angular-frontend
+    container_name: angular-frontend
+    ports:
+      - "4200:80"
+    depends_on:
+      - api-gateway
+    restart: unless-stopped
+
+  config-server:
+    build: ./config-server
+    container_name: config-server
+    image: naderbenmimoun/config-server
+    ports:
+      - "8888:8888"
+    environment:
+      - SPRING_PROFILES_ACTIVE=native
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://serviceregistry:8761/eureka/
+      - SPRING_CLOUD_CONFIG_SERVER_NATIVE_SEARCH_LOCATIONS=file:///config
+    volumes:
+      - ./config-server/src/main/resources/configs:/config
+    depends_on:
+      - serviceregistry
+    restart: unless-stopped
+
+  keycloak-db:
+    image: postgres:15
+    container_name: keycloak-db
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: keycloak
+    volumes:
+      - keycloak-db-data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    container_name: keycloak
+    command: start-dev --import-realm
+    ports:
+      - "8080:8080"
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_DB: postgres
+      KC_DB_URL_HOST: keycloak-db
+      KC_DB_URL_DATABASE: keycloak
+      KC_HOSTNAME: keycloak
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: keycloak
+    volumes:
+      - ./realm-export.json:/opt/keycloak/data/import/realm-export.json
+    depends_on:
+      - keycloak-db
+    restart: unless-stopped
+
+volumes:
+  keycloak-db-data:
