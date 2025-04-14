@@ -3,10 +3,13 @@ const cors = require("cors");
 
 const app = express();
 
-var corsOptions = {
-  origin: "http://localhost:8081"
+// Allow requests from any origin (for development)
+const corsOptions = {
+  origin: [
+    "http://localhost:8081", // Include your backend client if necessary
+    "http://localhost:4200", // Add your Angular frontend
+  ],
 };
-
 app.use(cors(corsOptions));
 
 // parse requests of content-type - application/json
@@ -24,20 +27,19 @@ db.sequelize.sync()
     console.log("Failed to sync db: " + err.message);
   });
 
-// // drop the table if it already exists
+// Uncomment below if you want to reset database tables
 // db.sequelize.sync({ force: true }).then(() => {
 //   console.log("Drop and re-sync db.");
 // });
 
 // simple route
 app.get("/", (req, res) => {
-  res.json({ message: "Welcome to bezkoder application." });
+  res.json({ message: "Welcome to the application." });
 });
 
 require("./app/routes/payment.routes")(app);
 
-
-// set port, listen for requests
+// Set port and listen for requests
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}.`);
