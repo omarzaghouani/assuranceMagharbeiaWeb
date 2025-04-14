@@ -7,7 +7,6 @@ module.exports = app => {
     router.get("/:id", payments.findOne);
     router.put("/:id", payments.update);
     router.delete("/:id", payments.delete);
-  
     app.use("/api/payments", router);
   };
   
