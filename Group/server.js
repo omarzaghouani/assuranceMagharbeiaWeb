@@ -34,7 +34,6 @@ app.get("/", (req, res) => {
   res.json({ message: "Welcome to bezkoder application." });
 });
 
-require("./app/routes/turorial.routes")(app);
 require("./app/routes/payment.routes")(app);
 
 
