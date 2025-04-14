@@ -1,0 +1,66 @@
+<h2>Refund List</h2>
+<button (click)="openAddModal()">Add Refund</button>
+
+
+<select [(ngModel)]="selectedStatus">
+  <option value="">-- Tous les statuts --</option>
+  <option value="PENDING">PENDING</option>
+  <option value="APPROVED">APPROVED</option>
+  <option value="COMPLETED">COMPLETED</option>
+  <option value="DENIED">DENIED</option>
+</select>
+
+<button class="btn btn-outline-danger ms-2" (click)="downloadPdf1()">📄 Exporter PDF filtré</button>
+<input type="text" placeholder="Rechercher..." [(ngModel)]="searchText" class="form-control mb-3" />
+
+
+
+<div *ngFor="let refund of filteredRefunds">
+  <p>
+    ID: {{refund.id}}, Amount: {{refund.amount}}, Status: {{refund.status}}
+    <button (click)="openUpdateModal(refund)">Edit</button>
+    <button (click)="deleteRefund(refund.id!)">Delete</button>
+  </p>
+</div>
+
+<!-- Modal -->
+<div *ngIf="showModal" class="modal-backdrop">
+  <div class="modal">
+    <h3>{{ isUpdateMode ? 'Update Refund' : 'Add Refund' }}</h3>
+    <form (ngSubmit)="saveRefund()">
+      <label>Amount:</label>
+      <input type="number" [(ngModel)]="currentRefund.amount" name="amount" required />
+
+      <label>Status:</label>
+      <select [(ngModel)]="currentRefund.status" name="status">
+        <option value="PENDING">PENDING</option>
+        <option value="APPROVED">APPROVED</option>
+        <option value="COMPLETED">COMPLETED</option>
+        <option value="DENIED">DENIED</option>
+      </select>
+
+      <label>Request Date:</label>
+      <input type="date" [(ngModel)]="currentRefund.requestDate" name="requestDate" required />
+
+      <button type="submit">{{ isUpdateMode ? 'Update' : 'Add' }}</button>
+      <button type="button" (click)="showModal = false">Cancel</button>
+    </form>
+  </div>
+</div>
+
+<style>
+.modal-backdrop {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.modal {
+  background: white;
+  padding: 1rem;
+  border-radius: 8px;
+  min-width: 300px;
+}
+</style>

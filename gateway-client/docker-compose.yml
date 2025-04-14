@@ -1,0 +1,61 @@
+version: "3.9"
+
+services:
+  serviceregistry:  # Eureka Server
+    container_name: eureka
+    build: ./demoerikaserveur
+    hostname: serviceregistry
+    ports:
+      - "8761:8761"
+    image: ahmedamine12345/eureka
+    environment:
+      - eureka.client.serviceUrl.defaultZone=http://serviceregistry:8761/eureka/
+    restart: unless-stopped
+
+  db-mysql:
+    image: "mysql:5.6"
+    container_name: db-mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+    ports:
+      - "3307:3306"
+    restart: unless-stopped
+
+  refund-web-distibue:
+    container_name: refund-web-distibue
+    build: ./refund-web-distibue
+    ports:
+      - "8083:8083"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db-mysql:3306/RefundTest?createDatabaseIfNotExist=true&useSSL=false&max_allowed_packet=15728640
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://serviceregistry:8761/eureka/
+    image: ahmedamine12345/refund-web-distibue
+    restart: unless-stopped
+    depends_on:
+      - serviceregistry
+      - db-mysql
+
+  api-gateway:
+    build: ./Apigatway4sae10
+    image: ahmedamine12345/apigateway
+    container_name: api-gateway
+    ports:
+      - "8093:8093"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://serviceregistry:8761/eureka/
+    depends_on:
+      - serviceregistry
+      - refund-web-distibue
+    restart: unless-stopped
+    
+  angular-frontend:
+    build: ./gateway-client
+    image: ahmedamine12345/angular-frontend
+    container_name: angular-frontend
+    ports:
+      - "4200:80"
+    depends_on:
+      - api-gateway
+    restart: unless-stopped
