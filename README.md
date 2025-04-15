@@ -15,7 +15,7 @@ Il s'intègre avec d'autres microservices comme :
 - Communication : REST API / OpenFeign
 - Service Discovery : Eureka (ou Consul)
 - Configuration : Spring Cloud Config
-- Sécurité : Spring Security / JWT (si applicable)
+- Sécurité : Spring Security /keyclock / JWT (si applicable)
 - CI/CD : GitHub Actions (optionnel)
 
 ## 📁 Structure du projet
